@@ -3,10 +3,12 @@ import (
 	"net/http"
 	"fmt"
 	"log"
+	"html/template"
 	// "encoding/json"
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
+	"os"
 )
 type userData struct {
     id int
@@ -35,6 +37,7 @@ func sayhi(w http.ResponseWriter, r *http.Request){
 	if r.FormValue("id") != ""{
 		 ser = r.FormValue("id")
 	}
+	
 	var (
 		id string
 		firstName string
@@ -42,26 +45,35 @@ func sayhi(w http.ResponseWriter, r *http.Request){
 		gender string
 	)
 db, err = sql.Open("mysql", "root:@/user_db")
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkerr(err)
 	defer db.Close()
 	rows,err := db.Query("SELECT * FROM user_tb WHERE id ="+ser)
-	if err != nil{
-		panic(err)
-	}
+	checkerr(err)
 	for rows.Next(){
 		err := rows.Scan(&id,&firstName,&secondName,&gender) 
-		if err != nil{
-			panic(err)
-		}
+		checkerr(err)
 		fmt.Fprintln(w,id + " " + firstName +" "+secondName+" "+gender)
 	}
 	
 }
+func checkerr(err error){
+	if err != nil {
+			log.Fatal(err)
+		}
+}
+type person struct{
+	Username string
+}
+func getTemplate(w http.ResponseWriter, r *http.Request){
+	t := template.New("sample.html")
+	e,_ := t.Parse("hello {{.Username}}")
+	p := person{Username:"harish"}
+	e.Execute(os.Stdout,p)
 
+}
 func main(){
 	http.HandleFunc("/people",something)
 	http.HandleFunc("/",sayhi)
+	http.HandleFunc("/template",getTemplate)
 	http.ListenAndServe(":8080",nil)
 }
