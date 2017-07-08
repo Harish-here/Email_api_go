@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
-	"os"
+	"bytes"
+	
+	"gopkg.in/gomail.v2"
 )
 type userData struct {
     id int
@@ -65,15 +67,42 @@ type person struct{
 	Username string
 }
 func getTemplate(w http.ResponseWriter, r *http.Request){
-	t := template.New("sample.html")
-	e,_ := t.Parse("hello {{.Username}}")
-	p := person{Username:"harish"}
-	e.Execute(os.Stdout,p)
+	t,_ := template.ParseFiles("confirm.html")//parsing the file to template
+	buf := new(bytes.Buffer) //contanier to hold the string of html code
+	err := t.Execute(buf,"Harish")
+	checkerr(err)
+	fmt.Fprintln(w,buf.String())
 
+}
+
+func sendMail(w http.ResponseWriter, r *http.Request){
+	m := gomail.NewMessage()
+m.SetHeader("From", "harish@infonixweblab.com")
+m.SetHeader("To", "v.ilamurugan@gmail.com")
+m.SetAddressHeader("Cc", "dan@example.com", "Ila")
+m.SetHeader("Subject", "Hello this is a test mail!")
+	t,_ := template.ParseFiles("confirm.html")
+	buf := new(bytes.Buffer)
+	if err = t.Execute(buf,"Harish");err != nil {
+		panic(err)
+	}
+ body := buf.String()
+m.SetBody("text/html", body)
+
+
+d := gomail.NewDialer("smtp.zoho.com", 587, "harish@infonixweblab.com", "harish123")
+
+// Send the email to Bob, Cora and Dan.
+if err := d.DialAndSend(m); err != nil {
+    panic(err)
+}else{
+	fmt.Fprint(w,"mail sent")
+}
 }
 func main(){
 	http.HandleFunc("/people",something)
 	http.HandleFunc("/",sayhi)
 	http.HandleFunc("/template",getTemplate)
+	http.HandleFunc("/sendmail",sendMail)
 	http.ListenAndServe(":8080",nil)
 }
