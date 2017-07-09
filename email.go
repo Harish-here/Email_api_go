@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 	"html/template"
-	// "encoding/json"
+
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 	"bytes"
-	
+
 	"gopkg.in/gomail.v2"
 )
 type userData struct {
@@ -24,13 +24,13 @@ func setJSONAsHeader(w http.ResponseWriter){
 	w.Header().Set("Content-Type","application/json")
 }
 func something(w http.ResponseWriter, r *http.Request){
+	
 	err := r.ParseForm()
 	if err != nil || len(r.Form) == 0 {
 		fmt.Fprintln(w,"No post data")
 		return
 	}
 	// fmt.Fprintln(w,r.Form)
-	setJSONAsHeader(w)
 	json.NewEncoder(w).Encode(r.Form)
 }
 func sayhi(w http.ResponseWriter, r *http.Request){
@@ -69,21 +69,20 @@ type person struct{
 func getTemplate(w http.ResponseWriter, r *http.Request){
 	t,_ := template.ParseFiles("confirm.html")//parsing the file to template
 	buf := new(bytes.Buffer) //contanier to hold the string of html code
-	err := t.Execute(buf,"Harish")
+	err := t.Execute(buf,person{Username:"harish"})
 	checkerr(err)
-	fmt.Fprintln(w,buf.String())
+	fmt.Fprintln(w,buf)
 
 }
 
 func sendMail(w http.ResponseWriter, r *http.Request){
 	m := gomail.NewMessage()
 m.SetHeader("From", "harish@infonixweblab.com")
-m.SetHeader("To", "v.ilamurugan@gmail.com")
-m.SetAddressHeader("Cc", "dan@example.com", "Ila")
-m.SetHeader("Subject", "Hello this is a test mail!")
+m.SetHeader("To", "justinsylas@infonixweblab.com")
+m.SetHeader("Subject", "Hello this is a test mail! from go API")
 	t,_ := template.ParseFiles("confirm.html")
 	buf := new(bytes.Buffer)
-	if err = t.Execute(buf,"Harish");err != nil {
+	if err = t.Execute(buf,person{Username:"harish"});err != nil {
 		panic(err)
 	}
  body := buf.String()
@@ -92,7 +91,7 @@ m.SetBody("text/html", body)
 
 d := gomail.NewDialer("smtp.zoho.com", 587, "harish@infonixweblab.com", "harish123")
 
-// Send the email to Bob, Cora and Dan.
+// Send the email to the target thru host
 if err := d.DialAndSend(m); err != nil {
     panic(err)
 }else{
@@ -104,5 +103,5 @@ func main(){
 	http.HandleFunc("/",sayhi)
 	http.HandleFunc("/template",getTemplate)
 	http.HandleFunc("/sendmail",sendMail)
-	http.ListenAndServe(":8080",nil)
+	log.Fatal(http.ListenAndServe(":3306",nil))
 }
