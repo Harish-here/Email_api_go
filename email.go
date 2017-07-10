@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"log"
 	"html/template"
-
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 	"bytes"
-
 	"gopkg.in/gomail.v2"
 )
 type userData struct {
@@ -46,9 +44,7 @@ func sayhi(w http.ResponseWriter, r *http.Request){
 		secondName string
 		gender string
 	)
-db, err = sql.Open("mysql", "root:@/user_db")
-	checkerr(err)
-	defer db.Close()
+
 	rows,err := db.Query("SELECT * FROM user_tb WHERE id ="+ser)
 	checkerr(err)
 	for rows.Next(){
@@ -74,6 +70,7 @@ func getTemplates(w http.ResponseWriter, r *http.Request){
 }
 
 func sendMail(w http.ResponseWriter,from string,to string,subject string,body string){
+	//main function for sending email
 	m := gomail.NewMessage()
 	m.SetHeader("From",from)
 	m.SetHeader("To",to)
@@ -90,12 +87,12 @@ func sendMail(w http.ResponseWriter,from string,to string,subject string,body st
 
 
 func getTemplate(file string,data templatedata) string {
+	//function to make body of the email (template + Data)
 	t,_ := template.ParseFiles(file)
 	buf := new(bytes.Buffer)
 	if err = t.Execute(buf,data);err != nil {
 		panic(err)
 	}
-	
 		return buf.String()
 	
 }
@@ -113,17 +110,43 @@ type templatedata struct{
 	Message string
 }
 func sendMails(w http.ResponseWriter, r *http.Request){
-d:= templatedata{
-	CustomerName : "harsih",
-	PhoneNumber :"8870072364",
-	CustomerEmail : " harish@infonixweblab.com",
-	Message : " this is a sample message",
-}
+	r.ParseForm()
+	
+var hotelID string
+var emailType string
+	if r.FormValue("hotelId") != "" || r.FormValue("emailType") != ""{ //checking for the postData
+		//getting the hotel id and it's type
+			hotelID = r.FormValue("hotelId")
+			emailType = r.FormValue("emailType") 
+		
+	}else{
+		hotelID ="h1"
+		emailType = "1"
+	}
+	//mockData
+	d:= templatedata{
+		CustomerName : "harsih",
+		PhoneNumber :"8870072364",
+		CustomerEmail : " harish@infonixweblab.com",
+		Message : " this is a sample message",
+	}
+	var patternName string
+//get the pattern from db for respective hotel based on hotelId
 
-body := getTemplate("checkout.html",d)
-sendMail(w,"harish@infonixweblab.com","madhan@infonixweblab.com","Booking Confirmation",body)
+ 	rows ,err := db.Query("SELECT patternName from hotel_email_pattern WHERE hoteId ='"+hotelID +"' AND emailType ="+emailType)
+ 	checkerr(err)
+	for rows.Next(){
+	
+	rows.Scan(&patternName)
+
+	}
+	body := getTemplate(patternName,d)
+	sendMail(w,"harish@infonixweblab.com","madhan@infonixweblab.com","Booking Confirmation",body)
 }
 func main(){
+	db, err = sql.Open("mysql", "root:@/user_db")
+	checkerr(err)
+	defer db.Close()
 
 
 
@@ -131,5 +154,5 @@ func main(){
 	http.HandleFunc("/",sayhi)
 	http.HandleFunc("/template",getTemplates)
 	http.HandleFunc("/sendmail",sendMails)
-	log.Fatal(http.ListenAndServe(":3306",nil))
+	log.Fatal(http.ListenAndServe(":8000",nil))
 }

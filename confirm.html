@@ -91,7 +91,7 @@
                                             <tr>
                                                 <td height='67' width='10'></td>
                                                 <td valign='top'>
-                                                    <br /><br />[HotelAddress] {{.Username}}
+                                                    <br /><br />[HotelAddress] {{.CustomerName}}
                                                 </td>
                                             </tr>
                                         </table>
@@ -147,8 +147,8 @@
 
 													<table style='width:100%;border:1px solid steelblue !important;' class='sereport' cellpadding='2' cellspacing='0' color='rgb(245, 245, 245)' class='sereport' id='grid'>
 														<tr style='background-color:steelblue;'>
-															<td style='width:33%;border:1px solid steelblue !important; ; color: white'><b>Voucher No</b></td>
-															<td style='width:33%;border:1px solid steelblue !important; ; color: white'><b>Res No</b></td>
+															<td style='width:33%;border:1px solid steelblue !important; ; color: white'><b>Voucher No</b> {{.PhoneNumber}}</td>
+															<td style='width:33%;border:1px solid steelblue !important; ; color: white'><b>Res No</b>{{.CustomerEmail}}</td>
 															<td style='width:33%;border:1px solid steelblue !important; ; color: white'><b>Date of Reservation</b></td>
 														</tr>
 														<tr>
@@ -164,7 +164,7 @@
 												<td>
 													<table style='width:100%;border:1px solid steelblue !important;' class='sereport' cellpadding='2' cellspacing='0' color='rgb(245, 245, 245)' class='sereport' id='grid'>
 														<tr style='background-color:steelblue;'>
-															<td style='width:55%;border:1px solid steelblue !important; ; color: white'><b>Name of the guest</b></td>
+															<td style='width:55%;border:1px solid steelblue !important; ; color: white'><b>Name of the guest</b>{{.Message}}</td>
 															<td style='width:15%;border:1px solid steelblue !important; ; color: white'><b>Adult</b></td>
 															<td style='width:15%;border:1px solid steelblue !important; ; color: white'><b>Child</b></td>
 															<td style='width:15%;border:1px solid steelblue !important; ; color: white'><b>Infant</b></td>
