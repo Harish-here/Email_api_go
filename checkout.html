@@ -129,7 +129,7 @@
                                                     <div class='mainBody'>
 
                                                         <div style='text-align:left; font-size: 11px;'>
-                                                            <b>Dear Mr./Mrs [CustomerName],</b><br /><br />
+                                                            <b>Dear Mr./Mrs {{ .CustomerName }},</b><br /><br />
 
                                                             Every Guest is a Valued Guest, and we were delighted to be in our hotel during your recent stay. We hope that you Experienced Exceptional Service as intended by our Management and Staff. We sincerely appreciate your business and we value the opinions of our guests. Please take a few minutes to let us know about your experience and whether you would recommend us to your colleagues, friends and family.<br/><br/>
 
@@ -137,6 +137,11 @@
 
                                                             With Regards,<br />
                                                             Manager - Customer Relations<br /><br />
+                                                            <ul>
+                                                                <li>Phone Number : {{.PhoneNumber}}</li>
+                                                                <li>Customer Email : {{.CustomerEmail}}</li>
+                                                                <li>Message : {{.Message}}</li>
+                                                            </ul>
 
                                                         </div><br />
 
@@ -167,13 +172,13 @@
                 <table width='680' border='0' align='center' cellpadding='30' cellspacing='0'>
                     <tr>
                         <td valign='top'>
-                            <p style='font-size: 14px; line-height: 24px; font-family: Georgia, ' times new roman', times, serif; color #b0a08b; margin 0px;'>
+                            <p style="font-size: 14px; line-height: 24px; font-family: Georgia,times new roman, times, serif; color #b0a08b; margin 0px;">
                                 You?re receiving this e-mail because you?ve reserved rooms in our hotel.<br />
                                 If it's wrong? Kindly, let us know  <br />
                             </p>
                         </td>
                         <td valign='top'>
-                            <p style='font-size: 14px; line-height: 24px; font-family: Georgia, ' times new roman', times, serif; color #b0a08b; margin 0px;'>
+                            <p style="font-size: 14px; line-height: 24px; font-family: Georgia,  times new roman, times, serif; color #b0a08b; margin 0px;">
                                 [HotelAddress]
                     </tr>
                     <tr>
