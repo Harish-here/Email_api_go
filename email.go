@@ -120,8 +120,8 @@ var emailType string
 			emailType = r.FormValue("emailType") 
 		
 	}else{
-		hotelID ="h1"
-		emailType = "1"
+		hotelID ="h2"
+		emailType = "2"
 	}
 	//mockData
 	d:= templatedata{
@@ -133,11 +133,13 @@ var emailType string
 	var patternName string
 //get the pattern from db for respective hotel based on hotelId
 
- 	rows ,err := db.Query("SELECT patternName from hotel_email_pattern WHERE hoteId ='"+hotelID +"' AND emailType ="+emailType)
+ 	rows ,err := db.Query("SELECT patternName from hotel_email_pattern WHERE hoteId =? AND emailType =?",hotelID,emailType)
  	checkerr(err)
+	 
 	for rows.Next(){
 	
-	rows.Scan(&patternName)
+	err:=rows.Scan(&patternName)
+	checkerr(err)
 
 	}
 	body := getTemplate(patternName,d)
